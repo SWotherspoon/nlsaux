@@ -1,0 +1,11 @@
+Package: nlsaux
+Title: Support functions for nls
+Version: 0.0.0.9000
+Authors@R: person("Simon", "Wotherspoon", email = "Simon.Wotherspoon@utas.edu.au", role = c("aut", "cre"))
+Description: Provides additional tools for nls.
+Imports: stats
+Depends: R (>= 3.4.1)
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
