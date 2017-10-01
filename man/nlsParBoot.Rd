@@ -18,7 +18,7 @@ the test statistic.}
 an array of bootstrap samples.
 }
 \description{
-Perfrom a parametric bootstrap for a fitted nls model.
+Perform a parametric bootstrap for a fitted nls model.
 }
 \details{
 The user must provide a function to compute the test statistic

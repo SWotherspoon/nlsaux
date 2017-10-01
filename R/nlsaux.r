@@ -37,10 +37,38 @@ simulate.nls <- function (object, nsim = 1, seed = NULL, ...) {
 }
 
 
+##' Use missing value information to extend a vector
+##'
+##' The data, weights and fitted values stored within an
+##' \code{nlsModel} object have had cases with any missing values
+##' filtered out.  This function reintroduces missing values at the
+##' right locations so that the data, weights and fitted values match
+##' the original data source.
+##'
+##' @title Adjust for missing values
+##' @param omit an object creates by an \code{\link{na.action}} function
+##' @param x a vector
+##' @return  a vector
+na_extend <- function(omit,x) {
+  if(!is.null(omit)) {
+    if(is.data.frame(x)) {
+      keep <- rep.int(NA, nrow(x)+length(omit))
+      keep[-omit] <- seq_len(nrow(x))
+      x <- x[keep,,drop=FALSE]
+    } else {
+      keep <- rep.int(NA, length(x)+length(omit))
+      keep[-omit] <- seq_len(length(x))
+      x <- x[keep]
+    }
+  }
+  x
+}
 
 
 
-##' Perfrom a parametric bootstrap for a fitted nls model.
+
+
+##' Perform a parametric bootstrap for a fitted nls model.
 ##'
 ##' The user must provide a function to compute the test statistic
 ##' from a fitted nls object.  The test statistic is computed for each
@@ -52,47 +80,31 @@ simulate.nls <- function (object, nsim = 1, seed = NULL, ...) {
 ##' @param stat a function that takes a fitted nls object and returns
 ##'   the test statistic.
 ##' @return an array of bootstrap samples.
-##' @importFrom stats formula coef
+##' @importFrom stats formula coef update
 ##' @export
 nlsParBoot <- function(object,nboot=99,stat=coef) {
-  ## Regenerate the original data and name of response
-  d <- eval(object$data,environment(formula(object)))
+  ## Extract the data and (best) starting values
+  params <- names(environment(object$m$getEnv)$ind)
+  values <- as.list(object$m$getEnv())
+  data <-  as.data.frame(values[!(names(values) %in% params)])
+  start <-  as.data.frame(values[(names(values) %in% params)])
+  ## Replace missing values
+  data <- na_extend(object$na.action,data)
+  ## Determine response
   resp <- as.character(formula(object)[[2]])
   ## Ensure simulate predicts for the NA values
-  object.pr <- object
-  if(!is.null(object.pr$na.action) && class(object.pr$na.action)!="exclude")
-    class(object.pr$na.action) <- "exclude"
-  sapply(simulate(object.pr,nsim=nboot),
+  object.sim <- object
+  if(!is.null(object.sim$na.action) && class(object.sim$na.action)!="exclude")
+    class(object.sim$na.action) <- "exclude"
+  sapply(simulate(object.sim,nsim=nboot),
          function(y) {
-           d[[resp]] <- y
-           cl <- eval(substitute(update(object,data=data,start=start,evaluate=FALSE),
-                                 list(data=d,start=coef(object))))
-           stat(eval(cl,environment(formula(object))))
+           data[[resp]] <- y
+           stat(update(object,data=data,start=start))
          })
 }
 
 
 
-##' Use missing value information to extend a vector
-##'
-##' Cases with missing values are removed from teh fitted values and
-##' weights stored in \code{nls}.  This function reintroduces missing
-##' values at the right locations so that the weights and fitted
-##' values match the original data source.
-##'
-##' @title Adjust for missing values
-##' @param omit an object creates by an \code{\link{na.action}} function
-##' @param x a vector
-##' @return  a vector
-na_extend <- function(omit,x) {
-  if(!is.null(omit)) {
-    keep <- rep.int(NA, length(x)+length(omit))
-    keep[-omit] <- seq_along(x)
-    x <- x[keep]
-    if(!is.null(names(x))) names(x)[omit] <- names(omit)
-  }
-  x
-}
 
 
 ##' Perform a Bayesian bootstrap for a fitted nls model.
@@ -107,14 +119,21 @@ na_extend <- function(omit,x) {
 ##' @param stat a function that takes a fitted nls object and returns
 ##'   the test statistic.
 ##' @return an array of bootstrap samples.
-##' @importFrom stats formula coef rexp
+##' @importFrom stats formula coef rexp update
 ##' @export
 nlsBayesBoot <- function(object,nboot=99,stat=coef) {
+  ## Extract the data and (best) starting values
+  params <- names(environment(object$m$getEnv)$ind)
+  values <- as.list(object$m$getEnv())
+  data <-  as.data.frame(values[!(names(values) %in% params)])
+  start <-  as.data.frame(values[(names(values) %in% params)])
   ## Extract model weights
   w <- object$weights
   if(is.null(w)) w <- rep(1,length(object$m$fitted()))
+  ## Reinsert missing values
+  data <- na_extend(object$na.resid,data)
   w <- na_extend(object$na.action,w)
-  ## Only non-missing cases get reweighted
+  ## Only reweight non-missing cases
   k <- which(!is.na(w))
   w[is.na(w)] <- 0
   sapply(seq_len(nboot),
@@ -122,10 +141,7 @@ nlsBayesBoot <- function(object,nboot=99,stat=coef) {
            ## Reweight by dirichlet weights
            b <- rexp(length(k),1)
            w[k] <- w[k]*(b/sum(b))
-           ## Update call and evaluate in the environment of the model formula
-           cl <- eval(substitute(update(object,weights=weights,start=start,evaluate=FALSE),
-                                 list(weights=w,start=coef(object))))
-           stat(eval(cl,environment(formula(object))))
+           stat(update(object,data=data,start=start,weights=w))
          })
 }
 
@@ -138,38 +154,46 @@ nlsBayesBoot <- function(object,nboot=99,stat=coef) {
 ##' @param object a fitted nls object.
 ##' @return A matrix where each row corresponds to an observation and
 ##'   each column a DFBETAS or DFFITS
-##' @importFrom stats formula coef setNames
+##' @importFrom stats formula coef setNames update
 ##' @export
 nlsInfluence <- function(object) {
   ## Model summary and name of response
   smry <- summary(object)
-  resp <- as.character(formula(object)[[2]])
+  response <- as.character(formula(object)[[2]])
+  ## Extract the data and (best) starting values
+  params <- names(environment(object$m$getEnv)$ind)
+  values <- as.list(object$m$getEnv())
+  data <-  as.data.frame(values[!(names(values) %in% params)])
+  start <-  as.data.frame(values[(names(values) %in% params)])
   ## Extract model weights, fitted values and diagonals of the hat matrix
   w <- object$weights
   if(is.null(w)) w <- rep(1,length(object$m$fitted()))
-  w <- na_extend(object$na.action,w)
-  f <- na_extend(object$na.action,object$m$fitted())
+  f <- object$m$fitted()
   g <- object$m$gradient()
-  h <- na_extend(object$na.action,diag(g%*%smry$cov.unscaled%*%t(g)))
-  ## Only non-missing cases get reweighted
+  if(inherits(object$m,"nlsModel.plinear"))
+    g <- cbind(apply(g,c(1,3),'%*%',object$m$getAllPars()[-seq_len(dim(g)[3])]),
+               eval(formula(object)[[3L]],object$m$getEnv()))
+  h <- diag(g%*%smry$cov.unscaled%*%t(g))
+  ## Reinsert missing values
+  data <- na_extend(object$na.action,data)
+  w <- na_extend(object$na.action,w)
+  f <- na_extend(object$na.action,f)
+  h <- na_extend(object$na.action,h)
+  ## Only reweight non-missing cases
   k <- which(!is.na(w))
   w[is.na(w)] <- 0
   dfs <- t(sapply(k,
                   function(k) {
                     ## Weight out current case
                     w[k] <- 0
-                    ## Update call and evaluate in the environment of the model formula
-                    cl <- eval(substitute(update(object,weights=weights,start=start,evaluate=FALSE),
-                                          list(weights=w,start=coef(object))))
-                    object.k <- eval(cl,environment(formula(object)))
+                    ## Update fit
+                    object.k <- update(object,data=data,start=start,weights=w)
                     smry.k <- summary(object.k)
                     f.k <- na_extend(object.k$na.action,object.k$m$fitted())
-                    c(
-                      ## DFBETAS
+                    c(## DFBETAS
                       (coef(object)-coef(object.k))/(smry.k$sigma*sqrt(diag(smry$cov.unscaled))),
                       ## DFFITS
-                      setNames((f[k]-f.k[k])/(smry.k$sigma*sqrt(h[k])),resp))
-
+                      setNames((f[k]-f.k[k])/(smry.k$sigma*sqrt(h[k])),response))
                   }))
   rownames(dfs) <- k
   dfs

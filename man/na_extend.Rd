@@ -18,8 +18,9 @@ a vector
 Use missing value information to extend a vector
 }
 \details{
-Cases with missing values are removed from teh fitted values and
-weights stored in \code{nls}.  This function reintroduces missing
-values at the right locations so that the weights and fitted
-values match the original data source.
+The data, weights and fitted values stored within an
+\code{nlsModel} object have had cases with any missing values
+filtered out.  This function reintroduces missing values at the
+right locations so that the data, weights and fitted values match
+the original data source.
 }
