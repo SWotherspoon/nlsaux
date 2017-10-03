@@ -4,18 +4,22 @@
 \alias{nlsParBoot}
 \title{NLS Parametric Bootstrap}
 \usage{
-nlsParBoot(object, nboot = 99, stat = coef)
+nlsParBoot(object, nboot = 99, statistic = coef)
 }
 \arguments{
 \item{object}{a fitted nls object.}
 
 \item{nboot}{number of bootstrap samples.}
 
-\item{stat}{a function that takes a fitted nls object and returns
-the test statistic.}
+\item{statistic}{a function that takes a fitted nls object as its first
+arguement and returns a vector of test statistics.}
 }
 \value{
-an array of bootstrap samples.
+Returns an object of class \code{nlsBoot} containing
+\item{\code{call}}{the matched call}
+\item{\code{statistic}}{the test statistic}
+\item{\code{nls}}{the fitted nls object}
+\item{\code{boot}}{an array of bootrap samples}
 }
 \description{
 Perform a parametric bootstrap for a fitted nls model.
