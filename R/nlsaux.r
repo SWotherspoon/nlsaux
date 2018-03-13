@@ -394,6 +394,6 @@ qqnorm.nlsBoot <- function(y,which,...) {
   failed <- sapply(y$boot,is.null)
   bt <- simplify2array(object$boot[!failed],FALSE)
   if(missing(which)) which <- seq_len(nrow(bt))
-  for(k in which) qqnorm([k,],...)
+  for(k in which) qqnorm(bt[k,],...)
 }
 
