@@ -186,7 +186,7 @@ nlsJKnife <- function(object,statistic=coef) {
 ##' \item{\code{level}}{requested confidence level}
 ##' \item{\code{lwr}}{jackknife lower confidence limit}
 ##' \item{\code{upr}}{jackknife upper confidence limit}
-##' @importFrom stats qt
+##' @importFrom stats qt printCoefmat
 ##' @export
 summary.nlsJKnife <- function(object,level=0.95,...) {
 
@@ -342,7 +342,7 @@ nlsBayesBoot <- function(object,nboot=99,statistic=coef) {
 ##' @param x an object of class \code{summary.nlsBoot}
 ##' @param digits the number of significant digits to use when printing
 ##' @param ... ignored
-##' @importFrom stats quantile
+##' @importFrom stats quantile printCoefmat qnorm sd
 ##' @return Returns the estimates as an array.
 ##' @export
 summary.nlsBoot <- function(object,level=0.95,method=c("basic","percentile","Normal"),...) {
@@ -372,10 +372,10 @@ print.summary.nlsBoot <- function(x,digits = max(3L, getOption("digits") - 3L),.
   cat("\nCall:\n",
       paste(deparse(x$object$call),sep = "\n",collapse = "\n"),
       "\n\n", sep = "")
-  if(nfailed>0) cat("Convergence Failures:",nfailed,"\n\n")
+  if(x$nfailed>0) cat("Convergence Failures:",x$nfailed,"\n\n")
 
   a <- (1-x$level)/2
-  tab <- cbind(x$theta,ci)
+  tab <- cbind(x$theta,x$ci)
   colnames(tab) <- c("Estimate",
                      paste(format(100*c(a,1-a),trim=TRUE,scientific=FALSE,digits=3),"%",sep=""))
   rownames(tab) <- names(x$theta)
@@ -389,10 +389,11 @@ print.summary.nlsBoot <- function(x,digits = max(3L, getOption("digits") - 3L),.
 ##' @param y an object of class \code{nlsBoot}
 ##' @param which a numeric vector indicating with statistics to plot
 ##' @param ... extra arguments to be passed to \code{qqnorm}
+##' @importFrom stats qqnorm
 ##' @export
 qqnorm.nlsBoot <- function(y,which,...) {
   failed <- sapply(y$boot,is.null)
-  bt <- simplify2array(object$boot[!failed],FALSE)
+  bt <- simplify2array(y$boot[!failed],FALSE)
   if(missing(which)) which <- seq_len(nrow(bt))
   for(k in which) qqnorm(bt[k,],...)
 }
