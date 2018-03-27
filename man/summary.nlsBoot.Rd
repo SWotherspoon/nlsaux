@@ -12,17 +12,17 @@
   ...)
 }
 \arguments{
-\item{object}{an object of class \code{nlsBoot}}
+\item{object}{An object of class \code{nlsBoot}.}
 
-\item{level}{the confidence level required.}
+\item{level}{The confidence level required.}
 
-\item{method}{confidence interval type}
+\item{method}{The type of bootstrap confidence interval to compute.}
 
-\item{...}{ignored}
+\item{...}{Currently ignored.}
 
-\item{x}{an object of class \code{summary.nlsBoot}}
+\item{x}{An object of class \code{summary.nlsBoot}.}
 
-\item{digits}{the number of significant digits to use when printing}
+\item{digits}{The number of significant digits to use when printing.}
 }
 \value{
 Returns the estimates as an array.

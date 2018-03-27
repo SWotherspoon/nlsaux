@@ -7,11 +7,11 @@
 nlsBayesBoot(object, nboot = 99, statistic = coef)
 }
 \arguments{
-\item{object}{a fitted nls object.}
+\item{object}{A fitted nls object.}
 
-\item{nboot}{number of bootstrap samples.}
+\item{nboot}{Number of bootstrap samples.}
 
-\item{statistic}{a function that takes a fitted nls object as its first
+\item{statistic}{A function that takes a fitted nls object as its first
 argument and returns a vector of test statistics.}
 }
 \value{
@@ -26,6 +26,8 @@ Perform a Bayesian bootstrap for a fitted nls model.
 }
 \details{
 The user must provide a function to compute the test statistic
-from a fitted nls object.  The test statistic is computed for each
-bootstrap sample and the results are returned as an array.
+from a fitted nls object. The test statistic is computed for each
+bootstrap sample and the results stored as a list in the \code{boot}
+component of the returned object. If \code{nls} fails to converge
+for any bootstrap sample \code{NULL} is returned for that sample.
 }
