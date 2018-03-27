@@ -10,13 +10,10 @@ nlsInfluence(object)
 \item{object}{a fitted nls object.}
 }
 \value{
-A matrix where each row corresponds to an observation and
-  each column a DFBETAS or DFFITS
+Returns a matrix with DFBETAS as columns labelled by the
+  corresponding parameter names and DFFITS labelled by the name of
+  the response, where each row corresponds to an observation.
 }
 \description{
-Calculate DFBETAS and DFFITS for a fitted nls model
-}
-\details{
-Returns DFBETAS as columns labelled by the corresponding parameter
-names and DFFITS labelled by the name of the response.
+Calculate DFBETAS and DFFITS for a fitted nls model.
 }

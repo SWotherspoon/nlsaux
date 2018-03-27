@@ -1,13 +1,14 @@
-##' Simulate one or more responses from the distribution corresponding to a fitted \code{\link{nls}} object.
+##' Simulate one or more responses from the distribution corresponding
+##' to a fitted \code{\link{nls}} object.
 ##'
 ##' This is a simple wrapper function for \code{simulate.lm}.
 ##'
 ##' @title Simulate Responses.
-##' @param object an object representing a fitted model.
-##' @param nsim number of response vectors to simulate. Defaults to 1.
-##' @param seed an object specifying if and how the random number
+##' @param object An object representing a fitted model.
+##' @param nsim Number of response vectors to simulate. Defaults to 1.
+##' @param seed An object specifying if and how the random number
 ##'   generator should be initialized ('seeded').
-##' @param ... additional optional arguments.
+##' @param ... Additional optional arguments.
 ##' @return A dataframe with attribute "seed", where each column
 ##'   represents a set of simulated responses.
 ##' @importFrom stats simulate df.residual deviance fitted rnorm runif
@@ -46,9 +47,9 @@ simulate.nls <- function (object, nsim = 1, seed = NULL, ...) {
 ##' the original data source.
 ##'
 ##' @title Adjust for missing values
-##' @param omit an object creates by an \code{\link{na.action}} function
-##' @param x a vector or matrix
-##' @return a vector or matrix
+##' @param omit An object created by an \code{\link{na.action}} function
+##' @param x A vector or matrix
+##' @return A vector or matrix
 na_extend <- function(omit,x) {
   if(!is.null(omit)) {
     if(is.data.frame(x)) {
@@ -64,15 +65,14 @@ na_extend <- function(omit,x) {
   x
 }
 
-##' Calculate DFBETAS and DFFITS for a fitted nls model
+##' Calculate DFBETAS and DFFITS for a fitted nls model.
 ##'
-##' Returns DFBETAS as columns labelled by the corresponding parameter
-##' names and DFFITS labelled by the name of the response.
 ##' @title NLS Influence Measures
 ##' @param object a fitted nls object.
-##' @return A matrix where each row corresponds to an observation and
-##'   each column a DFBETAS or DFFITS
 ##' @importFrom stats formula coef setNames update
+##' @return Returns a matrix with DFBETAS as columns labelled by the
+##'   corresponding parameter names and DFFITS labelled by the name of
+##'   the response, where each row corresponds to an observation.
 ##' @export
 nlsInfluence <- function(object) {
   ## Extract the data and (best) starting values
@@ -104,14 +104,19 @@ nlsInfluence <- function(object) {
                   function(k) {
                     ## Weight out current case
                     w[k] <- 0
-                    ## Update fit
-                    object.k <- update(object,data=data,start=start,weights=w)
-                    smry.k <- summary(object.k)
-                    f.k <- na_extend(object.k$na.action,object.k$m$fitted())
-                    c(## DFBETAS
-                      (coef(object)-coef(object.k))/(smry.k$sigma*sqrt(diag(smry$cov.unscaled))),
-                      ## DFFITS
-                      setNames((f[k]-f.k[k])/(smry.k$sigma*sqrt(h[k])),response))
+                    ## Update fit from fitted coefs
+                    object.k <- tryCatch(update(object,data=data,start=start,weights=w),
+                                         error=function(e) NULL)
+                    if(is.null(object.k)) {
+                      rep.int(NA,length(coef(object))+1)
+                    } else {
+                      smry.k <- summary(object.k)
+                      f.k <- na_extend(object.k$na.action,object.k$m$fitted())
+                      c(## DFBETAS
+                        (coef(object)-coef(object.k))/(smry.k$sigma*sqrt(diag(smry$cov.unscaled))),
+                        ## DFFITS
+                        setNames((f[k]-f.k[k])/(smry.k$sigma*sqrt(h[k])),response))
+                    }
                   }))
   rownames(dfs) <- k
   dfs
@@ -126,9 +131,12 @@ nlsInfluence <- function(object) {
 ##' from a fitted nls object.  The test statistic is computed for each
 ##' jacknife sample.
 ##'
+##' If \code{nls} fails to converge for any of the jackknife samples,
+##' the routine will fail and the results are undefined.
+##'
 ##' @title NLS Jackknife
-##' @param object a fitted nls object.
-##' @param statistic a function that takes a fitted nls object as its first
+##' @param object A fitted nls object.
+##' @param statistic A function that takes a fitted nls object as its first
 ##'   argument and returns a vector of test statistics.
 ##' @return Returns an object of class \code{nlsJKnife} containing
 ##' \item{\code{call}}{the matched call}
@@ -172,11 +180,11 @@ nlsJKnife <- function(object,statistic=coef) {
 ##' the test statistic.
 ##'
 ##' @title Summary for nlsJKnife
-##' @param object an object of class \code{nlsJKnife}
-##' @param level the confidence level required.
-##' @param x an object of class \code{summary.nlsJKnife}
-##' @param digits the number of significant digits to use when printing
-##' @param ... currently ignored
+##' @param object An object of class \code{nlsJKnife}.
+##' @param level The confidence level required.
+##' @param x An object of class \code{summary.nlsJKnife}.
+##' @param digits The number of significant digits to use when printing.
+##' @param ... Currently ignored.
 ##' @return Returns an object of class \code{nlsJKnife} containing
 ##' \item{\code{object}}{the \code{nlsJKnife} object}
 ##' \item{\code{theta}}{estimate of the test statistic}
@@ -213,6 +221,7 @@ summary.nlsJKnife <- function(object,level=0.95,...) {
 
 
 ##' @rdname summary.nlsJKnife
+##' @importFrom stats printCoefmat
 ##' @export
 print.summary.nlsJKnife <- function(x,digits = max(3L, getOption("digits") - 3L),...) {
   cat("\nCall:\n",
@@ -235,25 +244,27 @@ print.summary.nlsJKnife <- function(x,digits = max(3L, getOption("digits") - 3L)
 ##'
 ##' The user must provide a function to compute the test statistic
 ##' from a fitted nls object.  The test statistic is computed for each
-##' bootstrap sample and the results are returned as an array.
+##' bootstrap sample and the results stored as a list in the \code{boot}
+##' component of the returned object. If \code{nls} fails to converge
+##' for any bootstrap sample \code{NULL} is returned for that sample.
 ##'
 ##' @title NLS Parametric Bootstrap
-##' @param object a fitted nls object.
-##' @param nboot number of bootstrap samples.
-##' @param statistic a function that takes a fitted nls object as its first
+##' @param object A fitted nls object.
+##' @param nboot Number of bootstrap samples.
+##' @param statistic A function that takes a fitted nls object as its first
 ##'   arguement and returns a vector of test statistics.
 ##' @return Returns an object of class \code{nlsBoot} containing
 ##' \item{\code{call}}{the matched call}
 ##' \item{\code{statistic}}{the test statistic}
 ##' \item{\code{nls}}{the fitted nls object}
-##' \item{\code{boot}}{an array of bootrap samples}
+##' \item{\code{boot}}{a list of bootrap samples}
 ##' @importFrom stats formula coef update
 ##' @export
 nlsParBoot <- function(object,nboot=99,statistic=coef) {
+  ## Record call and random seed
   cl <- match.call()
-  ## Store seed
-  if(!exists(".Random.seed")) set.seed(NULL)
-  seed <- .Random.seed
+  if(!exists(".Random.seed",envir=.GlobalEnv,inherits=FALSE)) set.seed(NULL)
+  seed <- get(".Random.seed",envir=.GlobalEnv)
   ## Extract the data and (best) starting values
   params <- names(environment(object$m$getEnv)$ind)
   values <- as.list(object$m$getEnv())
@@ -281,16 +292,71 @@ nlsParBoot <- function(object,nboot=99,statistic=coef) {
 
 
 
+##' Perform a wild bootstrap for a fitted nls model.
+##'
+##' The user must provide a function to compute the test statistic
+##' from a fitted nls object.  The standard Normal distribution is
+##' used to construct wild bootstrap samples from the fitted model.
+##' The test statistic is computed for each bootstrap sample and the
+##' results stored as a list in the \code{boot} component of the
+##' returned object. If \code{nls} fails to converge for any bootstrap
+##' sample \code{NULL} is returned for that sample.
+##'
+##' @title NLS Wild Bootstrap
+##' @param object A fitted nls object.
+##' @param nboot Number of bootstrap samples.
+##' @param statistic a function that takes a fitted nls object as its first
+##'   arguement and returns a vector of test statistics.
+##' @return Returns an object of class \code{nlsBoot} containing
+##' \item{\code{call}}{the matched call}
+##' \item{\code{statistic}}{the test statistic}
+##' \item{\code{nls}}{the fitted nls object}
+##' \item{\code{boot}}{an array of bootrap samples}
+##' @importFrom stats formula coef update
+##' @export
+nlsWildBoot <- function(object,nboot=99,statistic=coef) {
+  ## Record call and random seed
+  cl <- match.call()
+  if(!exists(".Random.seed",envir=.GlobalEnv,inherits=FALSE)) set.seed(NULL)
+  seed <- get(".Random.seed",envir=.GlobalEnv)
+  ## Extract the data and (best) starting values
+  params <- names(environment(object$m$getEnv)$ind)
+  values <- as.list(object$m$getEnv())
+  data <-  as.data.frame(values[!(names(values) %in% params)])
+  start <-  values[params]
+  ## Extract fitted values and residuals
+  ftd <- object$m$fitted()
+  res <- object$m$resid()
+  ## Replace missing values
+  data <- na_extend(object$na.action,data)
+  ftd <- na_extend(object$na.action,ftd)
+  res <- na_extend(object$na.action,res)
+  ## Determine response
+  resp <- as.character(formula(object)[[2]])
+  boot <- lapply(seq_len(nboot),
+                 function(.) {
+                   data[[resp]] <- ftd+rnorm(length(res))*res
+                   tryCatch(statistic(update(object,data=data,start=start)),
+                            error=function(e) NULL)
+                 })
+  structure(list(call=cl,statistic=statistic,nls=object,boot=boot,seed=seed),
+            class="nlsBoot")
+}
+
+
+
 ##' Perform a Bayesian bootstrap for a fitted nls model.
 ##'
 ##' The user must provide a function to compute the test statistic
-##' from a fitted nls object.  The test statistic is computed for each
-##' bootstrap sample and the results are returned as an array.
+##' from a fitted nls object. The test statistic is computed for each
+##' bootstrap sample and the results stored as a list in the \code{boot}
+##' component of the returned object. If \code{nls} fails to converge
+##' for any bootstrap sample \code{NULL} is returned for that sample.
 ##'
 ##' @title NLS Bayesian Bootstrap
-##' @param object a fitted nls object.
-##' @param nboot number of bootstrap samples.
-##' @param statistic a function that takes a fitted nls object as its first
+##' @param object A fitted nls object.
+##' @param nboot Number of bootstrap samples.
+##' @param statistic A function that takes a fitted nls object as its first
 ##'   argument and returns a vector of test statistics.
 ##' @return Returns an object of class \code{nlsBoot} containing
 ##' \item{\code{call}}{the matched call}
@@ -300,10 +366,10 @@ nlsParBoot <- function(object,nboot=99,statistic=coef) {
 ##' @importFrom stats formula coef rexp update
 ##' @export
 nlsBayesBoot <- function(object,nboot=99,statistic=coef) {
+  ## Record call and random seed
   cl <- match.call()
-  ## Store seed
-  if(!exists(".Random.seed")) set.seed(NULL)
-  seed <- .Random.seed
+  if(!exists(".Random.seed",envir=.GlobalEnv,inherits=FALSE)) set.seed(NULL)
+  seed <- get(".Random.seed",envir=.GlobalEnv)
   ## Extract the data and (best) starting values
   params <- names(environment(object$m$getEnv)$ind)
   values <- as.list(object$m$getEnv())
@@ -330,19 +396,37 @@ nlsBayesBoot <- function(object,nboot=99,statistic=coef) {
             class="nlsBoot")
 }
 
+##' Coerces the samples from nlsBoot to matrix form.
+##'
+##' Each row of the result is a statistic and each column a bootstrap
+##' sample.  Samples where the model did not converge are discarded.
+##'
+##' @title Coerce nlsBoot Samples to Matrix
+##' @param x An object of class \code{nlsBoot}.
+##' @param ... Currently ignored.
+##' @return a matrix of the bootstrap samples where each row is a
+##'   statistic and each column a sample.
+##' @export
+as.matrix.nlsBoot <- function(x,...) {
+  failed <- sapply(x$boot,is.null)
+  b <- simplify2array(x$boot[!failed],FALSE)
+  if(is.null(dim(b))) b <- t(b)
+  attr(b,"nfailed") <- sum(failed)
+  b
+}
 
 
 ##' Constructs a table of estimates and boostrap confidence intervals for
 ##' the test statistic.
 ##'
 ##' @title Summary for nlsBoot
-##' @param object an object of class \code{nlsBoot}
-##' @param level the confidence level required.
-##' @param method confidence interval type
-##' @param x an object of class \code{summary.nlsBoot}
-##' @param digits the number of significant digits to use when printing
-##' @param ... ignored
-##' @importFrom stats quantile printCoefmat qnorm sd
+##' @param object An object of class \code{nlsBoot}.
+##' @param level The confidence level required.
+##' @param method The type of bootstrap confidence interval to compute.
+##' @param x An object of class \code{summary.nlsBoot}.
+##' @param digits The number of significant digits to use when printing.
+##' @param ... Currently ignored.
+##' @importFrom stats quantile sd qnorm
 ##' @return Returns the estimates as an array.
 ##' @export
 summary.nlsBoot <- function(object,level=0.95,method=c("basic","percentile","Normal"),...) {
@@ -350,24 +434,24 @@ summary.nlsBoot <- function(object,level=0.95,method=c("basic","percentile","Nor
   method <- match.arg(method)
   a <- (1-level)/2
   theta <- object$statistic(object$nls)
-  failed <- sapply(object$boot,is.null)
-  bs <- simplify2array(object$boot[!failed],FALSE)
-  if(is.null(dim(bs))) bs <- t(bs)
+  b <- as.matrix(object$boot)
   ci <- switch(method,
-               basic=t(apply(bs,1,quantile,c(a,1-a))),
-               percentile=2*theta-t(apply(bs,1,quantile,c(a,1-a)))[,2:1],
-               Normal=theta+apply(bs,1,sd)%o%qnorm(c(a,1-a)))
+               basic=t(apply(b,1,quantile,c(a,1-a))),
+               percentile=2*theta-t(apply(b,1,quantile,c(a,1-a)))[,2:1],
+               Normal=theta+apply(b,1,sd)%o%qnorm(c(a,1-a)))
 
   structure(list(object=object,
                  method=method,
                  level=level,
                  theta=theta,
                  ci=ci,
-                 nfailed=sum(failed)),
+                 nfailed=attr(b,"nfailed")),
             class="summary.nlsBoot")
 }
 
 ##' @rdname summary.nlsBoot
+##' @importFrom stats printCoefmat
+##' @export
 print.summary.nlsBoot <- function(x,digits = max(3L, getOption("digits") - 3L),...) {
   cat("\nCall:\n",
       paste(deparse(x$object$call),sep = "\n",collapse = "\n"),
@@ -383,18 +467,45 @@ print.summary.nlsBoot <- function(x,digits = max(3L, getOption("digits") - 3L),.
 }
 
 
+
 ##' Normal QQ plots of the bootstrap samples of an \code{nlsBoot} object.
 ##'
 ##' @title Normal QQ Plots for nlsBoot
-##' @param y an object of class \code{nlsBoot}
-##' @param which a numeric vector indicating with statistics to plot
-##' @param ... extra arguments to be passed to \code{qqnorm}
+##' @param y An object of class \code{nlsBoot}.
+##' @param which A numeric vector indicating which statistics to plot.
+##' @param ... Extra arguments to pass to \code{qqnorm}.
 ##' @importFrom stats qqnorm
 ##' @export
 qqnorm.nlsBoot <- function(y,which,...) {
-  failed <- sapply(y$boot,is.null)
-  bt <- simplify2array(y$boot[!failed],FALSE)
-  if(missing(which)) which <- seq_len(nrow(bt))
-  for(k in which) qqnorm(bt[k,],...)
+  b <- as.matrix(y)
+  if(missing(which)) which <- seq_len(nrow(b))
+  for(k in which) qqnorm(b[k,],...)
 }
+
+##' Plots of the bootstrap samples of an \code{nlsBoot} object.
+##'
+##' If \code{which} identifies a single statistic a box plot is
+##' contructed with a call to \code{boxplot}, for two statistics a
+##' standard plot is constructed with a call to \code{plot} and for
+##' more than two a pairwise plot is constructed with a call to
+##' \code{pairs}.
+##' @title Plots Samples from nlsBoot
+##' @param x An object of class \code{nlsBoot}.
+##' @param which A numeric vector indicating which statistics to plot.
+##' @param ... Extra arguments passed to the appropriate plot
+##'   function.
+##' @importFrom graphics boxplot plot pairs
+##' @export
+plot.nlsBoot <-  function(x,which,...) {
+  b <- as.matrix(x)
+  if(missing(which)) which <- seq_len(nrow(b))
+  if(length(which)==1) {
+    boxplot(b[which,,drop=TRUE],...)
+  } else if(length(which)==2) {
+    plot(b[which[1],,drop=TRUE],b[which[2],,drop=TRUE],...)
+  } else {
+    pairs(t(b[which,]),...)
+  }
+}
+
 

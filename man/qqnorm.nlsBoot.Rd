@@ -7,11 +7,11 @@
 \method{qqnorm}{nlsBoot}(y, which, ...)
 }
 \arguments{
-\item{y}{an object of class \code{nlsBoot}}
+\item{y}{An object of class \code{nlsBoot}.}
 
-\item{which}{a numeric vector indicating with statistics to plot}
+\item{which}{A numeric vector indicating which statistics to plot.}
 
-\item{...}{extra arguments to be passed to \code{qqnorm}}
+\item{...}{Extra arguments to pass to \code{qqnorm}.}
 }
 \description{
 Normal QQ plots of the bootstrap samples of an \code{nlsBoot} object.

@@ -7,9 +7,9 @@
 nlsJKnife(object, statistic = coef)
 }
 \arguments{
-\item{object}{a fitted nls object.}
+\item{object}{A fitted nls object.}
 
-\item{statistic}{a function that takes a fitted nls object as its first
+\item{statistic}{A function that takes a fitted nls object as its first
 argument and returns a vector of test statistics.}
 }
 \value{
@@ -26,4 +26,7 @@ Perform the Jackknife for a fitted nls model.
 The user must provide a function to compute the test statistic
 from a fitted nls object.  The test statistic is computed for each
 jacknife sample.
+
+If \code{nls} fails to converge for any of the jackknife samples,
+the routine will fail and the results are undefined.
 }

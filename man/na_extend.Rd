@@ -7,12 +7,12 @@
 na_extend(omit, x)
 }
 \arguments{
-\item{omit}{an object creates by an \code{\link{na.action}} function}
+\item{omit}{An object created by an \code{\link{na.action}} function}
 
-\item{x}{a vector or matrix}
+\item{x}{A vector or matrix}
 }
 \value{
-a vector or matrix
+A vector or matrix
 }
 \description{
 Use missing value information to extend a vector

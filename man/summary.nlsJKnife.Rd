@@ -11,15 +11,15 @@
   3L), ...)
 }
 \arguments{
-\item{object}{an object of class \code{nlsJKnife}}
+\item{object}{An object of class \code{nlsJKnife}.}
 
-\item{level}{the confidence level required.}
+\item{level}{The confidence level required.}
 
-\item{...}{currently ignored}
+\item{...}{Currently ignored.}
 
-\item{x}{an object of class \code{summary.nlsJKnife}}
+\item{x}{An object of class \code{summary.nlsJKnife}.}
 
-\item{digits}{the number of significant digits to use when printing}
+\item{digits}{The number of significant digits to use when printing.}
 }
 \value{
 Returns an object of class \code{nlsJKnife} containing

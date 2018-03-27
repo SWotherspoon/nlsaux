@@ -7,21 +7,22 @@
 \method{simulate}{nls}(object, nsim = 1, seed = NULL, ...)
 }
 \arguments{
-\item{object}{an object representing a fitted model.}
+\item{object}{An object representing a fitted model.}
 
-\item{nsim}{number of response vectors to simulate. Defaults to 1.}
+\item{nsim}{Number of response vectors to simulate. Defaults to 1.}
 
-\item{seed}{an object specifying if and how the random number
+\item{seed}{An object specifying if and how the random number
 generator should be initialized ('seeded').}
 
-\item{...}{additional optional arguments.}
+\item{...}{Additional optional arguments.}
 }
 \value{
 A dataframe with attribute "seed", where each column
   represents a set of simulated responses.
 }
 \description{
-Simulate one or more responses from the distribution corresponding to a fitted \code{\link{nls}} object.
+Simulate one or more responses from the distribution corresponding
+to a fitted \code{\link{nls}} object.
 }
 \details{
 This is a simple wrapper function for \code{simulate.lm}.
