@@ -468,7 +468,8 @@ print.summary.nlsBoot <- function(x,digits = max(3L, getOption("digits") - 3L),.
 
 
 
-##' Normal QQ plots of the bootstrap samples of an \code{nlsBoot} object.
+##' Normal QQ plots of the bootstrap samples of an \code{nlsBoot}
+##' object.
 ##'
 ##' @title Normal QQ Plots for nlsBoot
 ##' @param y An object of class \code{nlsBoot}.
