@@ -13,11 +13,12 @@ nlsJKnife(object, statistic = coef)
 argument and returns a vector of test statistics.}
 }
 \value{
-Returns an object of class \code{nlsJKnife} containing
-\item{\code{call}}{the matched call}
-\item{\code{statistic}}{the test statistic}
-\item{\code{nls}}{the fitted nls object}
-\item{\code{jknife}}{an array of jackknife samples}
+Returns an object of class `nlsJKnife` containing
+
+- `call`: the matched call
+- `statistic`: the test statistic
+- `nls`: the fitted nls object
+- `jknife`: an array of jackknife samples
 }
 \description{
 Perform the Jackknife for a fitted nls model.
@@ -27,6 +28,6 @@ The user must provide a function to compute the test statistic
 from a fitted nls object.  The test statistic is computed for each
 jacknife sample.
 
-If \code{nls} fails to converge for any of the jackknife samples,
+If [nls()] fails to converge for any of the jackknife samples,
 the routine will fail and the results are undefined.
 }

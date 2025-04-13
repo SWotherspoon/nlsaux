@@ -5,14 +5,12 @@
 \alias{print.summary.nlsBoot}
 \title{Summary for nlsBoot}
 \usage{
-\method{summary}{nlsBoot}(object, level = 0.95, method = c("basic",
-  "percentile", "Normal"), ...)
+\method{summary}{nlsBoot}(object, level = 0.95, method = c("basic", "percentile", "Normal"), ...)
 
-\method{print}{summary.nlsBoot}(x, digits = max(3L, getOption("digits") - 3L),
-  ...)
+\method{print}{summary.nlsBoot}(x, digits = max(3L, getOption("digits") - 3L), ...)
 }
 \arguments{
-\item{object}{An object of class \code{nlsBoot}.}
+\item{object}{An object of class `nlsBoot`.}
 
 \item{level}{The confidence level required.}
 
@@ -20,7 +18,7 @@
 
 \item{...}{Currently ignored.}
 
-\item{x}{An object of class \code{summary.nlsBoot}.}
+\item{x}{An object of class `summary.nlsBoot`.}
 
 \item{digits}{The number of significant digits to use when printing.}
 }

@@ -7,7 +7,7 @@
 na_extend(omit, x)
 }
 \arguments{
-\item{omit}{An object created by an \code{\link{na.action}} function}
+\item{omit}{An object created by an [na.action()] function}
 
 \item{x}{A vector or matrix}
 }
@@ -19,7 +19,7 @@ Use missing value information to extend a vector
 }
 \details{
 The data, weights and fitted values stored within an
-\code{nlsModel} object have had cases with any missing values
+`nlsModel` object have had cases with any missing values
 filtered out.  This function reintroduces missing values at the
 right locations so that the data, weights and fitted values match
 the original data source.

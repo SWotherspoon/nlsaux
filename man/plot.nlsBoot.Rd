@@ -7,7 +7,7 @@
 \method{plot}{nlsBoot}(x, which, ...)
 }
 \arguments{
-\item{x}{An object of class \code{nlsBoot}.}
+\item{x}{An object of class `nlsBoot`.}
 
 \item{which}{A numeric vector indicating which statistics to plot.}
 
@@ -15,12 +15,12 @@
 function.}
 }
 \description{
-Plots of the bootstrap samples of an \code{nlsBoot} object.
+Plots of the bootstrap samples of an `nlsBoot` object.
 }
 \details{
-If \code{which} identifies a single statistic a box plot is
-contructed with a call to \code{boxplot}, for two statistics a
-standard plot is constructed with a call to \code{plot} and for
+If `which` identifies a single statistic a box plot is
+contructed with a call to [boxplot()], for two statistics a
+standard plot is constructed with a call to [plot()] and for
 more than two a pairwise plot is constructed with a call to
-\code{pairs}.
+[pairs()].
 }

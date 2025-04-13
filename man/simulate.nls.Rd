@@ -22,8 +22,8 @@ A dataframe with attribute "seed", where each column
 }
 \description{
 Simulate one or more responses from the distribution corresponding
-to a fitted \code{\link{nls}} object.
+to a fitted [nls()] object.
 }
 \details{
-This is a simple wrapper function for \code{simulate.lm}.
+This is a simple wrapper function for [simulate.lm()].
 }

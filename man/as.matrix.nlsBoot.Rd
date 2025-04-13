@@ -7,7 +7,7 @@
 \method{as.matrix}{nlsBoot}(x, ...)
 }
 \arguments{
-\item{x}{An object of class \code{nlsBoot}.}
+\item{x}{An object of class `nlsBoot`.}
 
 \item{...}{Currently ignored.}
 }

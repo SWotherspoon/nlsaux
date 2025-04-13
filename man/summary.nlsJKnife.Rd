@@ -7,30 +7,30 @@
 \usage{
 \method{summary}{nlsJKnife}(object, level = 0.95, ...)
 
-\method{print}{summary.nlsJKnife}(x, digits = max(3L, getOption("digits") -
-  3L), ...)
+\method{print}{summary.nlsJKnife}(x, digits = max(3L, getOption("digits") - 3L), ...)
 }
 \arguments{
-\item{object}{An object of class \code{nlsJKnife}.}
+\item{object}{An object of class `nlsJKnife`.}
 
 \item{level}{The confidence level required.}
 
 \item{...}{Currently ignored.}
 
-\item{x}{An object of class \code{summary.nlsJKnife}.}
+\item{x}{An object of class `summary.nlsJKnife`.}
 
 \item{digits}{The number of significant digits to use when printing.}
 }
 \value{
-Returns an object of class \code{nlsJKnife} containing
-\item{\code{object}}{the \code{nlsJKnife} object}
-\item{\code{theta}}{estimate of the test statistic}
-\item{\code{corrected}}{jackknife bias corrected estimate}
-\item{\code{bias}}{jackknife estimate of bias}
-\item{\code{cov}}{jackknife estimate of covariance}
-\item{\code{level}}{requested confidence level}
-\item{\code{lwr}}{jackknife lower confidence limit}
-\item{\code{upr}}{jackknife upper confidence limit}
+Returns an object of class `nlsJKnife` containing
+
+- `object`: the `nlsJKnife` object
+- `theta`: estimate of the test statistic
+- `corrected`: jackknife bias corrected estimate
+- `bias`: jackknife estimate of bias
+- `cov`: jackknife estimate of covariance
+- `level`: requested confidence level
+- `lwr`: jackknife lower confidence limit
+- `upr`: jackknife upper confidence limit
 }
 \description{
 Constructs a table of estimates and confidence intervals for

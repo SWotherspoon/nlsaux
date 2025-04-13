@@ -15,11 +15,12 @@ nlsWildBoot(object, nboot = 99, statistic = coef)
 arguement and returns a vector of test statistics.}
 }
 \value{
-Returns an object of class \code{nlsBoot} containing
-\item{\code{call}}{the matched call}
-\item{\code{statistic}}{the test statistic}
-\item{\code{nls}}{the fitted nls object}
-\item{\code{boot}}{an array of bootrap samples}
+Returns an object of class `nlsBoot` containing
+
+- `call`: the matched call
+- `statistic`: the test statistic
+- `nls`: the fitted nls object
+- `boot`: an array of bootstrap samples
 }
 \description{
 Perform a wild bootstrap for a fitted nls model.
@@ -29,7 +30,7 @@ The user must provide a function to compute the test statistic
 from a fitted nls object.  The standard Normal distribution is
 used to construct wild bootstrap samples from the fitted model.
 The test statistic is computed for each bootstrap sample and the
-results stored as a list in the \code{boot} component of the
-returned object. If \code{nls} fails to converge for any bootstrap
-sample \code{NULL} is returned for that sample.
+results stored as a list in the `boot` component of the
+returned object. If [nls()] fails to converge for any bootstrap
+sample `NULL` is returned for that sample.
 }

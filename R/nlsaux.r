@@ -1,7 +1,7 @@
 ##' Simulate one or more responses from the distribution corresponding
-##' to a fitted \code{\link{nls}} object.
+##' to a fitted [nls()] object.
 ##'
-##' This is a simple wrapper function for \code{simulate.lm}.
+##' This is a simple wrapper function for [simulate.lm()].
 ##'
 ##' @title Simulate Responses.
 ##' @param object An object representing a fitted model.
@@ -41,13 +41,13 @@ simulate.nls <- function (object, nsim = 1, seed = NULL, ...) {
 ##' Use missing value information to extend a vector
 ##'
 ##' The data, weights and fitted values stored within an
-##' \code{nlsModel} object have had cases with any missing values
+##' `nlsModel` object have had cases with any missing values
 ##' filtered out.  This function reintroduces missing values at the
 ##' right locations so that the data, weights and fitted values match
 ##' the original data source.
 ##'
 ##' @title Adjust for missing values
-##' @param omit An object created by an \code{\link{na.action}} function
+##' @param omit An object created by an [na.action()] function
 ##' @param x A vector or matrix
 ##' @return A vector or matrix
 na_extend <- function(omit,x) {
@@ -131,18 +131,19 @@ nlsInfluence <- function(object) {
 ##' from a fitted nls object.  The test statistic is computed for each
 ##' jacknife sample.
 ##'
-##' If \code{nls} fails to converge for any of the jackknife samples,
+##' If [nls()] fails to converge for any of the jackknife samples,
 ##' the routine will fail and the results are undefined.
 ##'
 ##' @title NLS Jackknife
 ##' @param object A fitted nls object.
 ##' @param statistic A function that takes a fitted nls object as its first
 ##'   argument and returns a vector of test statistics.
-##' @return Returns an object of class \code{nlsJKnife} containing
-##' \item{\code{call}}{the matched call}
-##' \item{\code{statistic}}{the test statistic}
-##' \item{\code{nls}}{the fitted nls object}
-##' \item{\code{jknife}}{an array of jackknife samples}
+##' @return Returns an object of class `nlsJKnife` containing
+##' 
+##' - `call`: the matched call
+##' - `statistic`: the test statistic
+##' - `nls`: the fitted nls object
+##' - `jknife`: an array of jackknife samples
 ##' @importFrom stats formula coef update
 ##' @export
 nlsJKnife <- function(object,statistic=coef) {
@@ -180,20 +181,21 @@ nlsJKnife <- function(object,statistic=coef) {
 ##' the test statistic.
 ##'
 ##' @title Summary for nlsJKnife
-##' @param object An object of class \code{nlsJKnife}.
+##' @param object An object of class `nlsJKnife`.
 ##' @param level The confidence level required.
-##' @param x An object of class \code{summary.nlsJKnife}.
+##' @param x An object of class `summary.nlsJKnife`.
 ##' @param digits The number of significant digits to use when printing.
 ##' @param ... Currently ignored.
-##' @return Returns an object of class \code{nlsJKnife} containing
-##' \item{\code{object}}{the \code{nlsJKnife} object}
-##' \item{\code{theta}}{estimate of the test statistic}
-##' \item{\code{corrected}}{jackknife bias corrected estimate}
-##' \item{\code{bias}}{jackknife estimate of bias}
-##' \item{\code{cov}}{jackknife estimate of covariance}
-##' \item{\code{level}}{requested confidence level}
-##' \item{\code{lwr}}{jackknife lower confidence limit}
-##' \item{\code{upr}}{jackknife upper confidence limit}
+##' @return Returns an object of class `nlsJKnife` containing
+##' 
+##' - `object`: the `nlsJKnife` object
+##' - `theta`: estimate of the test statistic
+##' - `corrected`: jackknife bias corrected estimate
+##' - `bias`: jackknife estimate of bias
+##' - `cov`: jackknife estimate of covariance
+##' - `level`: requested confidence level
+##' - `lwr`: jackknife lower confidence limit
+##' - `upr`: jackknife upper confidence limit
 ##' @importFrom stats qt printCoefmat
 ##' @export
 summary.nlsJKnife <- function(object,level=0.95,...) {
@@ -244,20 +246,21 @@ print.summary.nlsJKnife <- function(x,digits = max(3L, getOption("digits") - 3L)
 ##'
 ##' The user must provide a function to compute the test statistic
 ##' from a fitted nls object.  The test statistic is computed for each
-##' bootstrap sample and the results stored as a list in the \code{boot}
-##' component of the returned object. If \code{nls} fails to converge
-##' for any bootstrap sample \code{NULL} is returned for that sample.
+##' bootstrap sample and the results stored as a list in the `boot`
+##' component of the returned object. If [nls()] fails to converge
+##' for any bootstrap sample `NULL` is returned for that sample.
 ##'
 ##' @title NLS Parametric Bootstrap
 ##' @param object A fitted nls object.
 ##' @param nboot Number of bootstrap samples.
 ##' @param statistic A function that takes a fitted nls object as its first
 ##'   arguement and returns a vector of test statistics.
-##' @return Returns an object of class \code{nlsBoot} containing
-##' \item{\code{call}}{the matched call}
-##' \item{\code{statistic}}{the test statistic}
-##' \item{\code{nls}}{the fitted nls object}
-##' \item{\code{boot}}{a list of bootrap samples}
+##' @return Returns an object of class `nlsBoot` containing
+##' 
+##' - `call`: the matched call
+##' - `statistic`: the test statistic
+##' - `nls`: the fitted nls object
+##' - `boot`: a list of bootstrap samples
 ##' @importFrom stats formula coef update
 ##' @export
 nlsParBoot <- function(object,nboot=99,statistic=coef) {
@@ -298,20 +301,21 @@ nlsParBoot <- function(object,nboot=99,statistic=coef) {
 ##' from a fitted nls object.  The standard Normal distribution is
 ##' used to construct wild bootstrap samples from the fitted model.
 ##' The test statistic is computed for each bootstrap sample and the
-##' results stored as a list in the \code{boot} component of the
-##' returned object. If \code{nls} fails to converge for any bootstrap
-##' sample \code{NULL} is returned for that sample.
+##' results stored as a list in the `boot` component of the
+##' returned object. If [nls()] fails to converge for any bootstrap
+##' sample `NULL` is returned for that sample.
 ##'
 ##' @title NLS Wild Bootstrap
 ##' @param object A fitted nls object.
 ##' @param nboot Number of bootstrap samples.
 ##' @param statistic a function that takes a fitted nls object as its first
 ##'   arguement and returns a vector of test statistics.
-##' @return Returns an object of class \code{nlsBoot} containing
-##' \item{\code{call}}{the matched call}
-##' \item{\code{statistic}}{the test statistic}
-##' \item{\code{nls}}{the fitted nls object}
-##' \item{\code{boot}}{an array of bootrap samples}
+##' @return Returns an object of class `nlsBoot` containing
+##' 
+##' - `call`: the matched call
+##' - `statistic`: the test statistic
+##' - `nls`: the fitted nls object
+##' - `boot`: an array of bootstrap samples
 ##' @importFrom stats formula coef update
 ##' @export
 nlsWildBoot <- function(object,nboot=99,statistic=coef) {
@@ -349,20 +353,21 @@ nlsWildBoot <- function(object,nboot=99,statistic=coef) {
 ##'
 ##' The user must provide a function to compute the test statistic
 ##' from a fitted nls object. The test statistic is computed for each
-##' bootstrap sample and the results stored as a list in the \code{boot}
-##' component of the returned object. If \code{nls} fails to converge
-##' for any bootstrap sample \code{NULL} is returned for that sample.
+##' bootstrap sample and the results stored as a list in the `boot`
+##' component of the returned object. If [nls()] fails to converge
+##' for any bootstrap sample `NULL` is returned for that sample.
 ##'
 ##' @title NLS Bayesian Bootstrap
 ##' @param object A fitted nls object.
 ##' @param nboot Number of bootstrap samples.
 ##' @param statistic A function that takes a fitted nls object as its first
 ##'   argument and returns a vector of test statistics.
-##' @return Returns an object of class \code{nlsBoot} containing
-##' \item{\code{call}}{the matched call}
-##' \item{\code{statistic}}{the test statistic}
-##' \item{\code{nls}}{the fitted nls object}
-##' \item{\code{boot}}{an array of bootrap samples}
+##' @return Returns an object of class `nlsBoot` containing
+##' 
+##' - `call`: the matched call
+##' - `statistic`: the test statistic
+##' - `nls`: the fitted nls object
+##' - `boot`: an array of bootstrap samples
 ##' @importFrom stats formula coef rexp update
 ##' @export
 nlsBayesBoot <- function(object,nboot=99,statistic=coef) {
@@ -402,7 +407,7 @@ nlsBayesBoot <- function(object,nboot=99,statistic=coef) {
 ##' sample.  Samples where the model did not converge are discarded.
 ##'
 ##' @title Coerce nlsBoot Samples to Matrix
-##' @param x An object of class \code{nlsBoot}.
+##' @param x An object of class `nlsBoot`.
 ##' @param ... Currently ignored.
 ##' @return a matrix of the bootstrap samples where each row is a
 ##'   statistic and each column a sample.
@@ -420,10 +425,10 @@ as.matrix.nlsBoot <- function(x,...) {
 ##' the test statistic.
 ##'
 ##' @title Summary for nlsBoot
-##' @param object An object of class \code{nlsBoot}.
+##' @param object An object of class `nlsBoot`.
 ##' @param level The confidence level required.
 ##' @param method The type of bootstrap confidence interval to compute.
-##' @param x An object of class \code{summary.nlsBoot}.
+##' @param x An object of class `summary.nlsBoot`.
 ##' @param digits The number of significant digits to use when printing.
 ##' @param ... Currently ignored.
 ##' @importFrom stats quantile sd qnorm
@@ -468,13 +473,13 @@ print.summary.nlsBoot <- function(x,digits = max(3L, getOption("digits") - 3L),.
 
 
 
-##' Normal QQ plots of the bootstrap samples of an \code{nlsBoot}
+##' Normal QQ plots of the bootstrap samples of an `nlsBoot`
 ##' object.
 ##'
 ##' @title Normal QQ Plots for nlsBoot
-##' @param y An object of class \code{nlsBoot}.
+##' @param y An object of class `nlsBoot`.
 ##' @param which A numeric vector indicating which statistics to plot.
-##' @param ... Extra arguments to pass to \code{qqnorm}.
+##' @param ... Extra arguments to pass to [qqnorm()].
 ##' @importFrom stats qqnorm
 ##' @export
 qqnorm.nlsBoot <- function(y,which,...) {
@@ -483,15 +488,15 @@ qqnorm.nlsBoot <- function(y,which,...) {
   for(k in which) qqnorm(b[k,],...)
 }
 
-##' Plots of the bootstrap samples of an \code{nlsBoot} object.
+##' Plots of the bootstrap samples of an `nlsBoot` object.
 ##'
-##' If \code{which} identifies a single statistic a box plot is
-##' contructed with a call to \code{boxplot}, for two statistics a
-##' standard plot is constructed with a call to \code{plot} and for
+##' If `which` identifies a single statistic a box plot is
+##' contructed with a call to [boxplot()], for two statistics a
+##' standard plot is constructed with a call to [plot()] and for
 ##' more than two a pairwise plot is constructed with a call to
-##' \code{pairs}.
+##' [pairs()].
 ##' @title Plots Samples from nlsBoot
-##' @param x An object of class \code{nlsBoot}.
+##' @param x An object of class `nlsBoot`.
 ##' @param which A numeric vector indicating which statistics to plot.
 ##' @param ... Extra arguments passed to the appropriate plot
 ##'   function.

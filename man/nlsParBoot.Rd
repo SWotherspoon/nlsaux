@@ -15,11 +15,12 @@ nlsParBoot(object, nboot = 99, statistic = coef)
 arguement and returns a vector of test statistics.}
 }
 \value{
-Returns an object of class \code{nlsBoot} containing
-\item{\code{call}}{the matched call}
-\item{\code{statistic}}{the test statistic}
-\item{\code{nls}}{the fitted nls object}
-\item{\code{boot}}{a list of bootrap samples}
+Returns an object of class `nlsBoot` containing
+
+- `call`: the matched call
+- `statistic`: the test statistic
+- `nls`: the fitted nls object
+- `boot`: a list of bootstrap samples
 }
 \description{
 Perform a parametric bootstrap for a fitted nls model.
@@ -27,7 +28,7 @@ Perform a parametric bootstrap for a fitted nls model.
 \details{
 The user must provide a function to compute the test statistic
 from a fitted nls object.  The test statistic is computed for each
-bootstrap sample and the results stored as a list in the \code{boot}
-component of the returned object. If \code{nls} fails to converge
-for any bootstrap sample \code{NULL} is returned for that sample.
+bootstrap sample and the results stored as a list in the `boot`
+component of the returned object. If [nls()] fails to converge
+for any bootstrap sample `NULL` is returned for that sample.
 }
