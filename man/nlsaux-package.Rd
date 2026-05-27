@@ -19,5 +19,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Simon Wotherspoon \email{Simon.Wotherspoon@utas.edu.au}
 
+Authors:
+\itemize{
+  \item Simon Wotherspoon \email{Simon.Wotherspoon@utas.edu.au}
+}
+
 }
 \keyword{internal}
